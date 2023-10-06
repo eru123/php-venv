@@ -1,5 +1,5 @@
 # venv
-Load env files virtually
+Load env files virtually and isolated to $_ENV to add security layer on your data, with added extra tooling for convenience
 
 ### Installation
 ```bash
