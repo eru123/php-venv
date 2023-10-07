@@ -1,6 +1,6 @@
 <?php
 
-use eru123\dotenv\VirtualEnv;
+use eru123\venv\VirtualEnv;
 
 /**
  * Load .env file from path or directory to virtual env
