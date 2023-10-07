@@ -1,6 +1,6 @@
 <?php
 
-use eru123\dotenv\Dotenv;
+use eru123\dotenv\VirtualEnv;
 
 /**
  * Load .env file from path or directory to virtual env
@@ -11,7 +11,7 @@ use eru123\dotenv\Dotenv;
  */
 function venv_load(string|null|array $path, bool $strict = true, bool|string $env_mode = false): array|false
 {
-    return Dotenv::load_env($path, $strict, $env_mode);
+    return VirtualEnv::load_env($path, $strict, $env_mode);
 }
 
 /**
@@ -22,7 +22,7 @@ function venv_load(string|null|array $path, bool $strict = true, bool|string $en
  */
 function venv_get(string $key = null, $default = null): mixed
 {
-    return Dotenv::venv_get($key, $default);
+    return VirtualEnv::venv_get($key, $default);
 }
 
 /**
@@ -33,7 +33,7 @@ function venv_get(string $key = null, $default = null): mixed
  */
 function venv_set(string $key, $value): void
 {
-    Dotenv::venv_set($key, $value);
+    VirtualEnv::venv_set($key, $value);
 }
 
 /**
@@ -42,15 +42,15 @@ function venv_set(string $key, $value): void
  */
 function venv_protect(): void
 {
-    Dotenv::venv_protect();
+    VirtualEnv::venv_protect();
 }
 
 function venv_forget(string $key): void
 {
-    Dotenv::forget(Dotenv::$venv, $key);
+    VirtualEnv::forget(VirtualEnv::$venv, $key);
 }
 
 function venv(string $key = null, $default = null)
 {
-    return Dotenv::venv_get($key, $default);
+    return VirtualEnv::venv_get($key, $default);
 }
