@@ -1,6 +1,6 @@
 <?php
 
-namespace eru123\env;
+namespace eru123\venv;
 
 use Exception;
 
