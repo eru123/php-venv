@@ -8,7 +8,7 @@ class VirtualEnv
 {
     protected static $venv = [];
     public static function get(array $array, string $key = null, $default = null)
-    {   
+    {
         if (is_null($key) || empty($key)) {
             return $array;
         }
@@ -17,14 +17,16 @@ class VirtualEnv
             return $array[$key];
         }
 
-        if (preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
-            $key = $matches[1];
-            $value = self::get($array, $key);
-            if (is_array($value)) {
-                $value = self::get($value, $key);
-            }
-            return $value;
-        }, $key) !== $key) {
+        if (
+            preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
+                $key = $matches[1];
+                $value = self::get($array, $key);
+                if (is_array($value)) {
+                    $value = self::get($value, $key);
+                }
+                return $value;
+            }, $key) !== $key
+        ) {
             $key = preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
                 $key = $matches[1];
                 $value = self::get($array, $key);
@@ -51,14 +53,16 @@ class VirtualEnv
             return $array = $value;
         }
 
-        if (preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
-            $key = $matches[1];
-            $value = self::get($array, $key);
-            if (is_array($value)) {
-                $value = self::get($value, $key);
-            }
-            return $value;
-        }, $key) !== $key) {
+        if (
+            preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
+                $key = $matches[1];
+                $value = self::get($array, $key);
+                if (is_array($value)) {
+                    $value = self::get($value, $key);
+                }
+                return $value;
+            }, $key) !== $key
+        ) {
             $key = preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
                 $key = $matches[1];
                 $value = self::get($array, $key);
@@ -139,7 +143,7 @@ class VirtualEnv
         if (empty($key)) {
             return;
         }
-        
+
         static::set(static::$venv, $key, $value);
     }
 
@@ -150,10 +154,12 @@ class VirtualEnv
 
     public static function venv_protect(): void
     {
-        foreach ($_ENV as $key => $value) {
+        $envs = getenv();
+        $envs = array_merge(is_array($envs) ? $envs : [], is_array($_ENV) ? $_ENV : []);
+        foreach ($envs as $key => $value) {
             self::venv_set($key, $value);
         }
-        
+
         if (function_exists('putenv')) {
             foreach ($_ENV as $key => $value) {
                 putenv($key . '=' . 0);
