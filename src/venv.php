@@ -2,8 +2,6 @@
 
 use eru123\venv\VirtualEnv;
 
-VirtualEnv::venv_protect();
-
 /**
  * Load .env file from path or directory to virtual env
  * @param string|null|array $path The .env file path or directory path, use array for multiple files or directories
@@ -46,4 +44,9 @@ function venv_forget(string $key): void
 function venv(string $key = null, $default = null)
 {
     return VirtualEnv::venv_get($key, $default);
+}
+
+function venv_protect(): void
+{
+    VirtualEnv::venv_protect();
 }
