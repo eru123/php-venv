@@ -162,7 +162,7 @@ class VirtualEnv
 
         if (function_exists('putenv')) {
             foreach ($_ENV as $key => $value) {
-                putenv($key . '=' . 0);
+                putenv($key);
             }
         }
     }
