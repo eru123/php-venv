@@ -7,8 +7,26 @@ use Exception;
 class VirtualEnv
 {
     protected static $venv = [];
-    public static function get(array $array, string $key = null, $default = null)
+
+    /**
+     * Get specific key from Array or all keys
+     * @param array $array The array to get key from
+     * @param string|array|null $key The key to get or null to get all keys
+     * @param mixed $default The default value to return if key not found
+     * @return mixed
+     */
+    public static function get(array $array, string|array $key = null, $default = null)
     {
+        if (is_array($key)) {
+            foreach ($key as $k) {
+                $tmp = static::get($array, $k, null);
+                if (!is_null($tmp)) {
+                    return $tmp;
+                }
+            }
+            return $default;
+        }
+
         if (is_null($key) || empty($key)) {
             return $array;
         }
@@ -20,18 +38,18 @@ class VirtualEnv
         if (
             preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
                 $key = $matches[1];
-                $value = self::get($array, $key);
+                $value = static::get($array, $key);
                 if (is_array($value)) {
-                    $value = self::get($value, $key);
+                    $value = static::get($value, $key);
                 }
                 return $value;
             }, $key) !== $key
         ) {
             $key = preg_replace_callback('/\{([^\}]+)\}/', function ($matches) use (&$array) {
                 $key = $matches[1];
-                $value = self::get($array, $key);
+                $value = static::get($array, $key);
                 if (is_array($value)) {
-                    $value = self::get($value, $key);
+                    $value = static::get($value, $key);
                 }
                 return $value;
             }, $key);
@@ -47,6 +65,13 @@ class VirtualEnv
         return $array;
     }
 
+    /**
+     * Set key-value pair to Array
+     * @param array $array The array to set key-value pair
+     * @param string $key The key to set, can be dot notation
+     * @param mixed $value The value to set
+     * @return array
+     */
     public static function set(array &$array, string $key, $value)
     {
         if (is_null($key) || empty($key)) {
@@ -90,6 +115,12 @@ class VirtualEnv
         return $array;
     }
 
+    /**
+     * Check if key exists in Array
+     * @param array $array The array to check key exists
+     * @param string $key The key to check, can be dot notation
+     * @return bool
+     */
     public static function has(array $array, string $key)
     {
         if (empty($array) || is_null($key) || empty($key)) {
@@ -110,6 +141,12 @@ class VirtualEnv
         return true;
     }
 
+    /**
+     * Remove key-value pair from Array
+     * @param array $array The array to remove key-value pair from
+     * @param string $key The key to remove, can be dot notation
+     * @return array
+     */
     public static function forget(array &$array, string $key)
     {
         if (is_null($key) || empty($key)) {
@@ -138,6 +175,12 @@ class VirtualEnv
         return $array;
     }
 
+    /**
+     * Set key-value pair to virtual env
+     * @param string $key The key to set, can be dot notation
+     * @param mixed $value The value to set
+     * @return void
+     */
     public static function venv_set(string $key, $value): void
     {
         if (empty($key)) {
@@ -147,11 +190,21 @@ class VirtualEnv
         static::set(static::$venv, $key, $value);
     }
 
-    public static function venv_get(string $key = null, $default = null)
+    /**
+     * Get specific key from virtual env or all keys
+     * @param string|array|null $key The key to get or null to get all keys
+     * @param mixed $default The default value to return if key not found
+     * @return mixed
+     */
+    public static function venv_get(string|array $key = null, $default = null)
     {
         return self::get(static::$venv, $key, $default);
     }
 
+    /**
+     * Move all key-value pair from $_ENV to virtual env
+     * @return void
+     */
     public static function venv_protect(): void
     {
         $envs = getenv();
@@ -167,6 +220,9 @@ class VirtualEnv
         }
     }
 
+    /**
+     * Load .env file from path or directory to virtual env
+     */
     public static function load_env(string|null|array $path, bool $strict = true, bool|string $env_mode = false): array|false
     {
         if (is_array($path)) {
@@ -224,6 +280,9 @@ class VirtualEnv
         return static::venv_get();
     }
 
+    /**
+     * Parse line from .env file
+     */
     public static function env_parse_line(string $line, bool $strict = false): array
     {
         $linearr = explode('=', $line, 2);
@@ -257,5 +316,23 @@ class VirtualEnv
         }
 
         return [$name, $value];
+    }
+
+    /**
+     * Merge array to virtual env
+     * @param array ...$array
+     * @return void
+     */
+    public static function venv_merge(array ...$array): void
+    {
+        foreach ($array as $arr) {
+            if (!is_array($arr) || array_keys($arr) !== range(0, count($arr) - 1)) {
+                continue;
+            }
+            
+            foreach ($arr as $k => $v) {
+                static::$venv[$k] = $v;
+            }
+        }
     }
 }
