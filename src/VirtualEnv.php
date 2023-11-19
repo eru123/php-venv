@@ -217,6 +217,7 @@ class VirtualEnv
             foreach ($envs as $key => $value) {
                 putenv($key);
             }
+            putenv('PHP_VENV_MESSAGE=PHP ENV is protected by venv, all environment variables are moved to virtual environment');
         }
     }
 
